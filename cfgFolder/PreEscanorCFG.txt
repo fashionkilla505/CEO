@@ -475,7 +475,7 @@ getgenv().Config = {
 		}
 	},
 	["Auto Join Setting"] = {
-		["Joiner Cooldown"] = 120,
+		["Joiner Cooldown"] = 60,
 		["Joiner Priority"] = {
 			["Boss Event Joiner"] = 5,
 			["Daily Challenge Joiner"] = 14,
