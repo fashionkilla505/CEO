@@ -1,9 +1,11 @@
-print("Local Main Executed!")
+print("Kaitun Pre Loaded")
 
 --not const vars
 
 local scriptKey = "obAniEzfJjenrWAHBnZcEgMQXmXnlamD"
 local loadKaitun = false
+local node = ""
+local version = 1.0
 
 --- Services
 
