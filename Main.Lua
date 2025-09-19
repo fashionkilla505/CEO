@@ -1,4 +1,3 @@
-print("Kaitun Pre Loaded")
 
 local version = 1.0
 
