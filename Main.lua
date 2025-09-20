@@ -11,8 +11,8 @@ local defaultScriptConfig = {
 }
 
 local brolyFarm = {}
-local scriptConfig
 
+scriptConfig = getgenv().kaitunConfig
 if scriptConfig == nil then
 	scriptConfig = defaultScriptConfig
 else
