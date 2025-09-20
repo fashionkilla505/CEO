@@ -5,9 +5,11 @@ local version = 1.0
 
 local defaultScriptConfig = {
     LoadScript = true,
-    Key = "obAniEzfJjenrWAHBnZcEgMQXmXnlamD",
+    Key = nil,
     Node = "defaultNode",
     webhookUrl = ""
+	levelMax = 11
+	icedTeaMax = 300000
 }
 
 local brolyFarm = {}
@@ -26,10 +28,6 @@ end
 for i, v in pairs(scriptConfig) do
 	print(i.. " value: ", v)
 end
-
-local scriptKey = scriptConfig.Key
-local loadKaitun = scriptConfig.LoadScript
-local node = scriptConfig.Node
 
 local urlCFG = {
 	namak = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/NamakCFG.txt",
@@ -54,6 +52,17 @@ local Lobby = {
 local lobbyPlaceId = 16146832113
 local gameId = 5578556129
 
+local scriptKey = scriptConfig.Key
+local loadKaitun = scriptConfig.LoadScript
+local node = scriptConfig.Node
+local level = scriptConfig.levelMax
+local icedTea = scriptConfig.icedTeaMax
+
+local attributesMax = { 
+	"Level" = level,
+	"IcedTea" = icedTea
+}
+
 
 local data = {
 	username = Player.Name,
@@ -65,9 +74,15 @@ local data = {
 
 local function loadNousigi(cfgURL)
 
-getgenv().Key = scriptKey
-loadstring(game:HttpGet(cfgURL))()
-loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
+if not scriptKey == nil then
+	getgenv().Key = scriptKey
+	loadstring(game:HttpGet(cfgURL))()
+	loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
+else
+	print("No script key found, loading without key.")
+	loadstring(game:HttpGet(cfgURL))()
+	loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
+	end
 end
 
 local function webhookMessage (msg)
@@ -140,24 +155,27 @@ if game.GameId == gameId then
 		print("Loading Kaitun")
 
 		if place == Game then
-		local eventListener = Player.AttributeChanged:Connect(function(attribute)
-			if attribute == "IcedTea" then
-				if Player:GetAttribute("IcedTea") >= 300000 then
-					Player:Kick("Got 300k iced tea, summon or buy rerolls.")
+		local attributeListener = Player.AttributeChanged:Connect(function(attribute)
+			for key, maxAttributeValue in pairs(attributesMax) do
+				if attribute == key then
+					if Player:GetAttribute(key) >= maxAttributeValue then
+						Player:Kick("Reached ".. key .." limit of " .. maxAttributeValue ..", returning to lobby.")
+					end
 				end
+
 			end
 		end)
 	end	
 		if Player:GetAttribute("Level") < 11 then
 			loadNousigi(urlCFG.namak)
 			print("Loaded Namak CFG")
-		elseif not place.hasEscanor() and Player:GetAttribute("Level") >= 11 then
+		elseif not place.hasEscanor() and Player:GetAttribute("Level") >= levelMax then
 			loadNousigi(urlCFG.preEscanor)
 			print("Loaded Pre Escanor CFG")
-		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") < 300000 then
+		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") < icedTeaMax then
 			loadNousigi(urlCFG.postEscanor)
 			print("Loaded Post Escanor CFG")
-		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") >= 300000 then
+		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") >= icedTeaMax then
 			if place == Game then
 				Player:Kick("Got 300k iced tea, summon or buy rerolls.")
 			end
