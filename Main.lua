@@ -36,12 +36,11 @@ local urlCFG = {
 }	
 
 --- Services
-
+print("line 39")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
+print("line 42")
 
-local unitsArray = loadstring(game:HttpGet("https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/unitsID/unitsModule.lua"))()
-local unitsEvolvedArray = loadstring(game:HttpGet("https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/unitsID/unitsEvolvedModule.lua"))()
 
 -- tables
 
@@ -64,16 +63,7 @@ local attributesMax = {
 }
 
 
-local data = {
-	username = Player.Name,
-	stage = game.PlaceId,
-	SummerVanguardPity = Player:GetAttribute("SummerVanguardPity")
-
-}
-
-
 local function loadNousigi(cfgURL)
-
 if scriptKey then
 	getgenv().Key = scriptKey
 	loadstring(game:HttpGet(cfgURL))()
@@ -83,10 +73,6 @@ elseif not scriptKey or scriptKey == "" then
 	loadstring(game:HttpGet(cfgURL))()
 	loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
 	end
-end
-
-local function webhookMessage (msg)
-
 end
 
 function Lobby.hasEscanor()
