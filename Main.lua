@@ -54,6 +54,7 @@ local gameId = 5578556129
 local scriptKey = scriptConfig.Key
 local loadKaitun = scriptConfig.LoadScript
 local node = scriptConfig.Node
+
 local level = scriptConfig.levelMax
 local icedTea = scriptConfig.icedTeaMax
 
@@ -151,23 +152,23 @@ if game.GameId == gameId then
 
 			end
 		end)
-	end	
 		if Player:GetAttribute("Level") < 11 then
 			loadNousigi(urlCFG.namak)
 			print("Loaded Namak CFG")
-		elseif not place.hasEscanor() and Player:GetAttribute("Level") >= levelMax then
+		elseif not place.hasEscanor() and Player:GetAttribute("Level") >= attributesMax.Level then
 			loadNousigi(urlCFG.preEscanor)
 			print("Loaded Pre Escanor CFG")
-		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") < icedTeaMax then
+		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") < attributesMax.IcedTea then
 			loadNousigi(urlCFG.postEscanor)
 			print("Loaded Post Escanor CFG")
-		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") >= icedTeaMax then
+		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") >= attributesMax.IcedTea then
 			if place == Game then
 				Player:Kick("Got 300k iced tea, summon or buy rerolls.")
 			end
 
 			--function for buying 300rrs
 			print("Have Escanor and 300k iced tea, not loading any cfg.")
+		end
 		end
 	end 
 end
