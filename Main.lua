@@ -74,11 +74,11 @@ local data = {
 
 local function loadNousigi(cfgURL)
 
-if not scriptKey == nil then
+if scriptKey then
 	getgenv().Key = scriptKey
 	loadstring(game:HttpGet(cfgURL))()
 	loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
-else
+elseif not scriptKey or scriptKey == "" then
 	print("No script key found, loading without key.")
 	loadstring(game:HttpGet(cfgURL))()
 	loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
