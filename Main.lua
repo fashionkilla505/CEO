@@ -5,7 +5,7 @@ local version = 1.0
 
 local defaultScriptConfig = {
     LoadScript = true,
-    Key = nil,
+    Key = "obAniEzfJjenrWAHBnZcEgMQXmXnlamD",
     Node = "defaultNode",
     webhookUrl = "",
 	levelMax = 11,
@@ -59,8 +59,8 @@ local level = scriptConfig.levelMax
 local icedTea = scriptConfig.icedTeaMax
 
 local attributesMax = { 
-	"Level" = level,
-	"IcedTea" = icedTea
+	Level = level,
+	IcedTea = icedTea
 }
 
 
