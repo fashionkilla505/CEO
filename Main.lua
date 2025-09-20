@@ -48,7 +48,9 @@ local unitsEvolvedArray = loadstring(game:HttpGet("https://pastebin.com/raw/s1V6
 -- tables
 
 local Game = {}
-local Lobby = {}
+local Lobby = {
+	placeId = 16146832113,
+}
 local lobbyPlaceId = 16146832113
 local gameId = 5578556129
 
@@ -132,19 +134,36 @@ if game.GameId == gameId then
 		print("In Game")
 		place = Game
 	end
-	if loadKaitun == true then
-		if place = Game 
-		local eventListener
 
+	if loadKaitun == true then
+
+		print("Loading Kaitun")
+
+		if place == Game then
+		local eventListener = Player.AttributeChanged:Connect(function(attribute)
+			if attribute == "IcedTea" then
+				if Player:GetAttribute("IcedTea") >= 300000 then
+					Player:Kick("Got 300k iced tea, summon or buy rerolls.")
+				end
+			end
+		end)
+	end	
 		if Player:GetAttribute("Level") < 11 then
 			loadNousigi(urlCFG.namak)
 			print("Loaded Namak CFG")
 		elseif not place.hasEscanor() and Player:GetAttribute("Level") >= 11 then
 			loadNousigi(urlCFG.preEscanor)
 			print("Loaded Pre Escanor CFG")
-		elseif place.hasEscanor() then
+		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") < 300000 then
 			loadNousigi(urlCFG.postEscanor)
 			print("Loaded Post Escanor CFG")
+		elseif place.hasEscanor() and Player:GetAttribute("IcedTea") >= 300000 then
+			if place == Game then
+				Player:Kick("Got 300k iced tea, summon or buy rerolls.")
+			end
+
+			--function for buying 300rrs
+			print("Have Escanor and 300k iced tea, not loading any cfg.")
 		end
 	end 
 end
