@@ -14,12 +14,12 @@ local defaultScriptConfig = {
 
 local brolyFarm = {}
 
-scriptConfig = getgenv().kaitunConfig
+scriptConfig = getgenv().CEOKaitunConfig
 if scriptConfig == nil then
 	scriptConfig = defaultScriptConfig
 else
 	for k, v in pairs(defaultScriptConfig) do
-		if scriptConfig[k] == nil then
+		if scriptConfig[k] == nil or scriptConfig[k] == "" then
 			scriptConfig[k] = v
 		end
 	end
