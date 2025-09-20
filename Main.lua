@@ -7,9 +7,9 @@ local defaultScriptConfig = {
     LoadScript = true,
     Key = nil,
     Node = "defaultNode",
-    webhookUrl = ""
-	levelMax = 11
-	icedTeaMax = 300000
+    webhookUrl = "",
+	levelMax = 11,
+	icedTeaMax = 300000,
 }
 
 local brolyFarm = {}
