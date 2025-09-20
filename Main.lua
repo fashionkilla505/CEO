@@ -40,8 +40,8 @@ local urlCFG = {
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 
-local unitsArray = loadstring(game:HttpGet("https://pastebin.com/raw/1Uap8mDB"))()
-local unitsEvolvedArray = loadstring(game:HttpGet("https://pastebin.com/raw/s1V6KvJn"))()
+local unitsArray = loadstring(game:HttpGet("https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/unitsID/unitsModule.lua"))()
+local unitsEvolvedArray = loadstring(game:HttpGet("https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/unitsID/unitsEvolvedModule.lua"))()
 
 -- tables
 
