@@ -1,5 +1,6 @@
 
 local version = 1.0
+local repoLink = 
 
 -- script config
 
@@ -7,7 +8,8 @@ local defaultScriptConfig = {
     LoadScript = true,
     Key = "",
     Node = "emptyNode",
-    webhookUrl = "https://discord.com/api/webhooks/1419796356989714525/hCvcOi9E872vlwK_P9jIXplBQKgMOTHnEzcu2gxCFdEQyKlYf8UOe-EFuqe7jZUbb4DD",
+    webhookUrl = "",
+	completedWebhookURL = "",
 	levelMax = 11,
 	icedTeaMax = 300000,
 }
@@ -47,6 +49,7 @@ print("line 45")
 
 -- tables
 
+
 local Game = {}
 local Lobby = {
 	placeId = 16146832113,
@@ -61,6 +64,7 @@ local scriptKey = scriptConfig.Key
 local loadKaitun = scriptConfig.LoadScript
 local node = scriptConfig.Node
 local webhookUrl = scriptConfig.webhookUrl
+local completedWebhookURL = scriptConfig.completedWebhookURL
 local level = scriptConfig.levelMax
 local icedTea = scriptConfig.icedTeaMax
 
@@ -252,8 +256,28 @@ local function writeFile()
 	-- template func just for messing around
 end
 
-local function sendWebhook(message, isError,embed)
+local function sendWebhook(message, isError, embed)
 	local url = webhookUrl
+
+
+	local success, response = pcall(function()
+		return request({
+			Url = url,
+			Method = "POST",
+			Headers = {
+				["Content-Type"] = "application/json",
+			},
+			Body = HttpService:JSONEncode({
+				["content"] = message .. " Node: ".. node,
+			}),
+		})
+	end)
+
+	return success and response
+end
+
+local function completedWebhook(message,isError,embed)
+	local url = completedWebhookURL
 
 
 	local success, response = pcall(function()
@@ -276,12 +300,12 @@ local function finishAccount(typeFarm)
 	local changeAccTxt = `{Player.Name}.txt`
 
 	if typeFarm == escanorFarm then
-		sendWebhook(Player.Name, " has Completed Escanor Farm")
+		completedWebhook(Player.Name, " has Completed Escanor Farm")
 		writefile(changeAccTxt, "Completed Escanor")
 		-- update spreadsheet or any other source of getting data
 		Player:Kick("COMPLETED ESCANOR FARM")
 	elseif typeFarm == brolyFarm then
-		sendWebhook(Player.Name, " has Completed Broly Farm")
+		completedWebhook(Player.Name, " has Completed Broly Farm")
 		writefile(changeAccTxt, "Completed Broly")
 		-- update spreadsheet or any other source of getting data
 		Player:Kick("COMPLETED BROLY FARM")
