@@ -236,6 +236,17 @@ local Game = {
 
 -- other game funcs
 
+function checkUnitSummoned(escanor?)
+	if escanor? == true then
+		while Lobby.Escanor() == false do
+		task.wait(10)
+		end
+		sendWebhook("Got escanor i think")
+		Player:Kick("Got Escanor")
+	end
+end
+
+
 function teleportToLobby(currentPlace)
 	if currentPlace == Game then
 		local teleportEvent = game:GetService("ReplicatedStorage").Networking.TeleportEvent
@@ -386,6 +397,10 @@ if game.GameId == vanguardsGameId then
 				currentFarmStage = escanorFarmStage["Escanor"]
 				-- check max Unit slots
 				Place.CheckIfExpandUnits()
+				task.spawn(function()
+				checkUnitSummoned(true)
+				end)
+				
 				loadNousigi(CFG["preEscanor"])
 			elseif not escanorFarm["rerolls"] then
 				currentFarmStage = escanorFarmStage["rerolls"]
