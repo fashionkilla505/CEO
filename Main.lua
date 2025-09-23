@@ -102,7 +102,46 @@ local brolyFarmUsers = {} -- require external table for getting know username fo
 local currentFarm
 local currentFarmStage
 
+--webhook
+local function sendWebhook(message, isError, embed)
+	local url = webhookUrl
 
+
+	local success, response = pcall(function()
+		return request({
+			Url = url,
+			Method = "POST",
+			Headers = {
+				["Content-Type"] = "application/json",
+			},
+			Body = HttpService:JSONEncode({
+				["content"] = "Node: " ..node.. "\n" .. message,
+			}),
+		})
+	end)
+
+	return success and response
+end
+
+local function completedWebhook(message,isError,embed)
+	local url = completedWebhookURL
+
+
+	local success, response = pcall(function()
+		return request({
+			Url = url,
+			Method = "POST",
+			Headers = {
+				["Content-Type"] = "application/json",
+			},
+			Body = HttpService:JSONEncode({
+				["content"] = "Node: " ..node.. "\n" .. message,
+			}),
+		})
+	end)
+
+	return success and response
+end
 
 -- loader funcs
 
@@ -172,9 +211,9 @@ function Lobby.CheckIfExpandUnits()
 
 				if maxUnits - currentUnits <= 10 then
 					if Player:GetAttribute("Gold") < (timesBought * 15000 + 25000) then
-						WebhookManager.warn(`> *{Player.Name}* doesn't have enough gold to expand unit capacity!`)
+						sendWebhook(`> *{Player.Name}* doesn't have enough gold to expand unit capacity!`)
 					else
-						WebhookManager.message(`> *{Player.Name}* is expanding unit capacity`)
+						sendWebhook(`> *{Player.Name}* is expanding unit capacity`)
 						UnitExpansionEvent:FireServer("Purchase")
 					end
 				end
@@ -251,9 +290,9 @@ function teleportToLobby(currentPlace)
 	if currentPlace == Game then
 		local teleportEvent = game:GetService("ReplicatedStorage").Networking.TeleportEvent
 		teleportEvent:FireServer("Lobby")
-		WebhookManager.message(`> *{Player.Name}* is returning to lobby.`)
+		sendWebhook(`> *{Player.Name}* is returning to lobby.`)
 	elseif currentPlace == Timechamber then
-		WebhookManager.message(`> *{Player.Name}* is returning to lobby from time chamber.`)
+		sendWebhook(`> *{Player.Name}* is returning to lobby from time chamber.`)
 		local playerGui = game:GetService("Players").LocalPlayer
 			:WaitForChild("PlayerGui")
 			:WaitForChild("Main")
@@ -290,45 +329,6 @@ local function writeFile()
 	-- template func just for messing around
 end
 
-local function sendWebhook(message, isError, embed)
-	local url = webhookUrl
-
-
-	local success, response = pcall(function()
-		return request({
-			Url = url,
-			Method = "POST",
-			Headers = {
-				["Content-Type"] = "application/json",
-			},
-			Body = HttpService:JSONEncode({
-				["content"] = "Node: " ..node.. "\n" .. message,
-			}),
-		})
-	end)
-
-	return success and response
-end
-
-local function completedWebhook(message,isError,embed)
-	local url = completedWebhookURL
-
-
-	local success, response = pcall(function()
-		return request({
-			Url = url,
-			Method = "POST",
-			Headers = {
-				["Content-Type"] = "application/json",
-			},
-			Body = HttpService:JSONEncode({
-				["content"] = "Node: " ..node.. "\n" .. message,
-			}),
-		})
-	end)
-
-	return success and response
-end
 
 local function finishAccount(typeFarm)
 	local changeAccTxt = `{Player.Name}.txt`
