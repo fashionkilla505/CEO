@@ -1,6 +1,6 @@
 
-local version = 1.0
-local repoLink = 
+local version = 2.0
+local repoLink
 
 -- script config
 
@@ -14,7 +14,7 @@ local defaultScriptConfig = {
 	icedTeaMax = 300000,
 }
 
-scriptConfig = getgenv().CEOKaitunConfig
+scriptConfig = getgenv().CEOKaitunConfig 
 
 if scriptConfig == nil then
 	scriptConfig = defaultScriptConfig
@@ -26,14 +26,11 @@ else
 	end
 end
 
-for i, v in pairs(scriptConfig) do
-	print(i.. " value: ", v)
-end
 
 -- nousigi cfgs
 
 local CFG = {
-	namak = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/NamakCFG.txt",
+	namak = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/levelFarmCFG.txt",
 	preEscanor = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/PreEscanorCFG.txt",
 	postEscanor = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/PostEscanorCFG.txt",
 }	
@@ -54,10 +51,13 @@ local Game = {}
 local Lobby = {
 	placeId = 16146832113,
 }
+local Timechamber = {
+	placeId = 18219125606,
+}
 
 local lobbyPlaceId = 16146832113
 local timeChamberPlaceId = 18219125606
-local gameId = 557855612
+local vanguardsGameId = 5578556129
 local currentPlace
 
 local scriptKey = scriptConfig.Key
@@ -75,8 +75,8 @@ local attributesMax = {
 }
 
 local escanorFarm = {
-	Level11 = false
-	Escanor = false
+	Level11 = false,
+	Escanor = false,
 	rerolls = false
 }
 
@@ -86,10 +86,10 @@ local brolyFarm = {}
 -- key equals it own name tables
 local brolyFarmStage = {}
 local escanorFarmStage = {}
-for key,value in pairs(escanorFarm)
+for key,value in pairs(escanorFarm) do
 	escanorFarmStage[key] = key
 end
-for key,value in pairs(brolyFarm)
+for key,value in pairs(brolyFarm) do
 	brolyFarmStage[key] = key
 end
 
@@ -106,6 +106,7 @@ local currentFarmStage
 -- loader funcs
 
 local function loadNousigi(cfgURL)
+	print("Loading Nousigi")
 	if not scriptKey or scriptKey == "" then
 		print("No script key found, loading without key.")
 		loadstring(game:HttpGet(cfgURL))()
@@ -115,6 +116,7 @@ local function loadNousigi(cfgURL)
 		loadstring(game:HttpGet(cfgURL))()
 		loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()	
 	end
+	print("Should nousigi be loaded")
 end
 
 -- lobby funcs
@@ -168,7 +170,7 @@ function Lobby.CheckIfExpandUnits()
 				local currentUnits = TableUtils.GetDictionaryLength(UnitWindowsHandler._Cache)
 
 				if maxUnits - currentUnits <= 10 then
-					if getAttribute("Gold") < (timesBought * 15000 + 25000) then
+					if Player:GetAttribute("Gold") < (timesBought * 15000 + 25000) then
 						WebhookManager.warn(`> *{Player.Name}* doesn't have enough gold to expand unit capacity!`)
 					else
 						WebhookManager.message(`> *{Player.Name}* is expanding unit capacity`)
@@ -177,7 +179,7 @@ function Lobby.CheckIfExpandUnits()
 				end
 				task.wait(10)
 			end
-		end)
+	end)
 end
 
 function Lobby.checkRRShop(shopName)
@@ -193,7 +195,7 @@ function Lobby.BuyRR(shopName)
 	-- copiei mesmo fodase
 	local args = {"Purchase",{"TraitRerolls",200}}
 
-	if eventShop == "SummerShop" then
+	if shopName == "SummerShop" then
 		if Player:GetAttribute("IcedTea") >= 300000 then
 			local summerShop = ReplicatedStorage:WaitForChild("Networking"):WaitForChild("Summer"):WaitForChild("ShopEvent")
 			summerShop:FireServer(unpack(args))
@@ -207,12 +209,12 @@ end
 -- In-game functions (works only on Tomer Defense Game Base)
 
 local Game = {
-	getStage = function(): string
+	getStage = function()
 		local gameHandler = require(ReplicatedStorage.Modules.Gameplay.GameHandler)
 		return gameHandler.GameData.Stage
 	end,
 
-	hasEscanor = function(): boolean
+	hasEscanor = function()
 		local UnitWindows = require(game:GetService("StarterPlayer").Modules.Interface.Loader.Windows.UnitWindowHandler)
 		local units = UnitWindows._Cache
 
@@ -233,23 +235,43 @@ local Game = {
 
 -- other game funcs
 
+function teleportToLobby(currentPlace)
+	if currentPlace == Game then
+		local teleportEvent = game:GetService("ReplicatedStorage").Networking.TeleportEvent
+		teleportEvent:FireServer("Lobby")
+		WebhookManager.message(`> *{Player.Name}* is returning to lobby.`)
+	elseif currentPlace == Timechamber then
+		WebhookManager.message(`> *{Player.Name}* is returning to lobby from time chamber.`)
+		local playerGui = game:GetService("Players").LocalPlayer
+			:WaitForChild("PlayerGui")
+			:WaitForChild("Main")
+			:WaitForChild("Create")
+			:WaitForChild("Button")
+		getconnections(playerGui.Activated)[1]:Fire()
+	end
+end
+
 local function validateInfo(typeFarm)
 	if typeFarm == escanorFarm then
 		if Player:GetAttribute("Level") >= 11 then
-			escanorFarm[Level11] = true
+			escanorFarm["Level11"] = true
 		end
-		if currentPlace.hasEscanor == true then
-			escanorFarm[Escanor] = true
+		if currentPlace.hasEscanor() then
+			escanorFarm["Escanor"] = true
 		end
 		if currentPlace == Lobby then
 			if currentPlace.checkRRShop("SummerShop") == 0 then
-				escanorFarm[rerolls] = true
+				escanorFarm["rerolls"] = true
 			end
 		else
 			print("current in game, cant check rerolls shop")
 		end
 	end
 	-- check type farm for broly
+	for i,v in pairs(typeFarm) do
+		print(i," ", v)
+	end	
+	return print("ValidateInfo Checked")
 end
 
 local function writeFile()
@@ -298,6 +320,7 @@ end
 
 local function finishAccount(typeFarm)
 	local changeAccTxt = `{Player.Name}.txt`
+	currentFarmStage = "DONE"
 
 	if typeFarm == escanorFarm then
 		completedWebhook(Player.Name, " has Completed Escanor Farm")
@@ -312,80 +335,95 @@ local function finishAccount(typeFarm)
 	end
 end
 
--- main kaitun code
-
-if game.GameId == gameId then
+-- main anime vanguards kaitun code
+print("current game id: ", game.GameId)
+if game.GameId == vanguardsGameId then
 
 	print("Loading Kaitun For Anime Vanguards")
 
 	local Place 
 
 	if game.PlaceId == lobbyPlaceId then
+		Place = Lobby
 		print("In Lobby")
-	Place = Lobby
 	elseif game.PlaceId == timeChamberPlaceId then
-		print("In timeChamber, kicking player.")
-		sendWebhook("> *" .. Player.Name .. "* entered Timechamber, kicking him.", true)
-		Player:Kick("Timechamber not allowed")
+		Place = Timechamber
+		print("In timeChamber, Going Lobby.")
+		sendWebhook("> *" .. Player.Name .. "* entered Timechamber, going back to Lobby.", true)
+		teleportToLobby(Place)
 	else
+		Place = Game
 		print("In Game")
 		Place = Game
 	end
 
 	currentPlace = Place
-
+	if currentPlace ~= Timechamber then
 	if loadKaitun == true then
 
 		print("Loading Kaitun")
-
 		if not currentFarm then
-			if brolyFarmUsers[player.Username] then
-				currentFarm = brolyFarm
-			else
+			if not brolyFarmUsers[Player.Name] then
 				currentFarm	= escanorFarm
+				currentFarm.Name = "Escanor"
+			else
+				currentFarm	= brolyFarm
+				currentFarm.Name = "Broly"
 			end
-		end	
+		end
+		local farmMessage = Player.Name, " is farming", currentFarm.Name
+		print(farmMessage)
+		sendWebhook(farmMessage,false)
 
+		-- escanor farm
 		if currentFarm == escanorFarm then
 
 			validateInfo(escanorFarm)
 
 			-- load cfg according to farm Stage
-			if not escanorFarm[Level11] then
-				currentFarmStage = escanorFarmStage[Level11]
-				loadNousigi(CFG[namak])
-			elseif not escanorFarm[Escanor] then
-				currentFarmStage = escanorFarmStage[Escanor]
+			if not escanorFarm["Level11"] then
+				currentFarmStage = escanorFarmStage["Level11"]
+				loadNousigi(CFG["namak"])
+			elseif not escanorFarm["Escanor"] then
+				currentFarmStage = escanorFarmStage["Escanor"]
 				-- check max Unit slots
 				Place.CheckIfExpandUnits()
-				loadNousigi(CFG[preEscanor])
-			elseif not escanorFarm[rerolls] then
-				currentFarmStage = escanorFarmStage[rerolls]
+				loadNousigi(CFG["preEscanor"])
+			elseif not escanorFarm["rerolls"] then
+				currentFarmStage = escanorFarmStage["rerolls"]
 				if Place == Game then
-					loadNousigi(CFG[postEscanor])
-				else if Place == Lobby then
+					loadNousigi(CFG["postEscanor"])
+
+				elseif Place == Lobby then
+
 					task.wait(Place.BuyRR("SummerShop"))
+
 					if Place.checkRRShop("SummerShop") == 0 then
-						escanorFarm[rerolls] = true
+						escanorFarm["rerolls"] = true
 						finishAccount(currentFarm)
 					end
-					loadNousigi(CFG[postEscanor])
+
+					loadNousigi(CFG["postEscanor"])
 				end
 			else
+				print("Account Done")
 				finishAccount(currentFarm)
 			end
-
-			if Place == Game then
-				sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarmStage .. " IN GAME", false)
-			-- check for level/icedtea quantity max
-			elseif Place == Lobby then
-				sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarmStage .. " IN LOBBY", false)
+			if currentFarmStage ~= "DONE" then
+				if Place == Game then
+					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarmStage .. " IN GAME", false)
+				-- check for level/icedtea quantity max
+				elseif Place == Lobby then
+					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarmStage .. " IN LOBBY", false)
+				end
+			else
+				sendWebhook("last webhook message this channel. " .. Player.Name .. " has done all kaitun steps")
 			end
 
 			if Place == Game then
 				local attributeListener = Player.AttributeChanged:Connect(function(attribute)
 
-				if currentFarm[Escanor] == true then
+				if currentFarmStage == "rerolls" then
 					attributesMax.IcedTea = 300000
 				end
 
@@ -395,13 +433,15 @@ if game.GameId == gameId then
 							Player:Kick("Reached ".. key .." limit of " .. maxAttributeValue ..", returning to lobby.")
 						end
 					end
-
+					
 				end
 			end)
 		end
 		--- broly farm
-
+	end
 	end
 end
+end
 
-print("idk if its working")
+
+print("its working")
