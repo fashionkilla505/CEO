@@ -4,6 +4,7 @@ local repoLink
 
 -- script config
 
+
 local defaultScriptConfig = {
     LoadScript = true,
     Key = "",
@@ -253,7 +254,7 @@ end
 
 local function validateInfo(typeFarm)
 	if typeFarm == escanorFarm then
-		if Player:GetAttribute("Level") >= 11 then
+		if Player:GetAttribute("Level") >= level then
 			escanorFarm["Level11"] = true
 		end
 		if currentPlace.hasEscanor() then
@@ -396,7 +397,8 @@ if game.GameId == vanguardsGameId then
 
 				elseif Place == Lobby then
 
-					task.wait(Place.BuyRR("SummerShop"))
+					Place.BuyRR("SummerShop")
+					task.wait(10)
 
 					if Place.checkRRShop("SummerShop") == 0 then
 						escanorFarm["rerolls"] = true
