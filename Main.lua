@@ -324,7 +324,7 @@ local function finishAccount(typeFarm)
 	currentFarmStage = "DONE"
 
 	if typeFarm == escanorFarm then
-		completedWebhook(Player.Name, " \nhas Completed Escanor Farm")
+		completedWebhook("User: " .. Player.Name .. " \nhas Completed Escanor Farm")
 		writefile(changeAccTxt, "Completed Escanor")
 		-- update spreadsheet or any other source of getting data
 		Player:Kick("COMPLETED ESCANOR FARM")
