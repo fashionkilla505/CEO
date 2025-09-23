@@ -1,6 +1,6 @@
 
 local version = 2.0
-local repoLink
+local repoLink = "https://github.com/fashionkilla505/CEO"
 
 -- script config
 
