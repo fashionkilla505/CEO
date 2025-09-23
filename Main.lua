@@ -291,7 +291,7 @@ local function sendWebhook(message, isError, embed)
 				["Content-Type"] = "application/json",
 			},
 			Body = HttpService:JSONEncode({
-				["content"] = message .. " Node: ".. node,
+				["content"] = "Node: " ..node.. "\n" .. message,
 			}),
 		})
 	end)
@@ -311,7 +311,7 @@ local function completedWebhook(message,isError,embed)
 				["Content-Type"] = "application/json",
 			},
 			Body = HttpService:JSONEncode({
-				["content"] = message .. " Node: ".. node,
+				["content"] = "Node: " ..node.. " \n" .. message,
 			}),
 		})
 	end)
@@ -324,12 +324,12 @@ local function finishAccount(typeFarm)
 	currentFarmStage = "DONE"
 
 	if typeFarm == escanorFarm then
-		completedWebhook(Player.Name, " has Completed Escanor Farm")
+		completedWebhook(Player.Name, " \nhas Completed Escanor Farm")
 		writefile(changeAccTxt, "Completed Escanor")
 		-- update spreadsheet or any other source of getting data
 		Player:Kick("COMPLETED ESCANOR FARM")
 	elseif typeFarm == brolyFarm then
-		completedWebhook(Player.Name, " has Completed Broly Farm")
+		completedWebhook("User: " .. Player.Name .. " \nhas Completed Broly Farm")
 		writefile(changeAccTxt, "Completed Broly")
 		-- update spreadsheet or any other source of getting data
 		Player:Kick("COMPLETED BROLY FARM")
@@ -372,7 +372,7 @@ if game.GameId == vanguardsGameId then
 				currentFarm.Name = "Broly"
 			end
 		end
-		local farmMessage = Player.Name .. " is farming " .. currentFarm.Name
+		local farmMessage = "> *" .. Player.Name .. " is farming " .. currentFarm.Name
 		print(farmMessage)
 		sendWebhook(farmMessage, false)
 
