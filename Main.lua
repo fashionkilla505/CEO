@@ -372,9 +372,6 @@ if game.GameId == vanguardsGameId then
 				currentFarm.Name = "Broly"
 			end
 		end
-		local farmMessage = "> *" .. Player.Name .. " is farming " .. currentFarm.Name
-		print(farmMessage)
-		sendWebhook(farmMessage, false)
 
 		-- escanor farm
 		if currentFarm == escanorFarm then
@@ -413,10 +410,10 @@ if game.GameId == vanguardsGameId then
 			end
 			if currentFarmStage ~= "DONE" then
 				if Place == Game then
-					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarmStage .. " IN GAME", false)
+					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarm.Name.. " at stage: " .. currentFarmStage .. " IN GAME", false)
 				-- check for level/icedtea quantity max
 				elseif Place == Lobby then
-					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarmStage .. " IN LOBBY", false)
+					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarm.Name.. " at stage: " .. currentFarmStage .. " IN LOBBY", false)
 				end
 			else
 				sendWebhook("last webhook message this channel. " .. Player.Name .. " has done all kaitun steps")
