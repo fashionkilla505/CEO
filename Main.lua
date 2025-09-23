@@ -1,6 +1,5 @@
 
 local version = 2.0
-local repoLink = "https://github.com/fashionkilla505/CEO"
 
 -- script config
 
@@ -275,15 +274,6 @@ local Game = {
 
 -- other game funcs
 
-function checkUnitSummoned(escanor?)
-	if escanor? == true then
-		while Lobby.Escanor() == false do
-		task.wait(10)
-		end
-		sendWebhook("Got escanor i think")
-		Player:Kick("Got Escanor")
-	end
-end
 
 
 function teleportToLobby(currentPlace)
@@ -397,9 +387,6 @@ if game.GameId == vanguardsGameId then
 				currentFarmStage = escanorFarmStage["Escanor"]
 				-- check max Unit slots
 				Place.CheckIfExpandUnits()
-				task.spawn(function()
-				checkUnitSummoned(true)
-				end)
 				
 				loadNousigi(CFG["preEscanor"])
 			elseif not escanorFarm["rerolls"] then
