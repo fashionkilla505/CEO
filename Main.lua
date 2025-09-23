@@ -372,9 +372,9 @@ if game.GameId == vanguardsGameId then
 				currentFarm.Name = "Broly"
 			end
 		end
-		local farmMessage = Player.Name, " is farming", currentFarm.Name
+		local farmMessage = Player.Name .. " is farming " .. currentFarm.Name
 		print(farmMessage)
-		sendWebhook(farmMessage,false)
+		sendWebhook(farmMessage, false)
 
 		-- escanor farm
 		if currentFarm == escanorFarm then
