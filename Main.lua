@@ -311,7 +311,7 @@ local function completedWebhook(message,isError,embed)
 				["Content-Type"] = "application/json",
 			},
 			Body = HttpService:JSONEncode({
-				["content"] = "Node: " ..node.. " \n" .. message,
+				["content"] = "Node: " ..node.. "\n" .. message,
 			}),
 		})
 	end)
@@ -324,12 +324,12 @@ local function finishAccount(typeFarm)
 	currentFarmStage = "DONE"
 
 	if typeFarm == escanorFarm then
-		completedWebhook("User: " .. Player.Name .. " \nhas Completed Escanor Farm")
+		completedWebhook("User: " .. Player.Name .. "\nCompleted Escanor Farm")
 		writefile(changeAccTxt, "Completed Escanor")
 		-- update spreadsheet or any other source of getting data
 		Player:Kick("COMPLETED ESCANOR FARM")
 	elseif typeFarm == brolyFarm then
-		completedWebhook("User: " .. Player.Name .. " \nhas Completed Broly Farm")
+		completedWebhook("User: " .. Player.Name .. "\nCompleted Broly Farm")
 		writefile(changeAccTxt, "Completed Broly")
 		-- update spreadsheet or any other source of getting data
 		Player:Kick("COMPLETED BROLY FARM")
