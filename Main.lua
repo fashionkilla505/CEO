@@ -429,7 +429,7 @@ if game.GameId == vanguardsGameId then
 				for key, maxAttributeValue in pairs(attributesMax) do
 					if attribute == key then
 						if Player:GetAttribute(key) >= maxAttributeValue then
-							Player:Kick("Reached ".. key .." limit of " .. maxAttributeValue ..", returning to lobby.")
+							sendWebhook("> *".. Player.Name .. "* has reached Limit for: " .. key )
 						end
 					end
 					
@@ -443,4 +443,4 @@ end
 end
 
 
-print("its working")
+print("its working!")
