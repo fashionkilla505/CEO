@@ -435,15 +435,9 @@ if game.GameId == vanguardsGameId then
 				for key, maxAttributeValue in pairs(attributesMax) do
 					if attribute == key then
 						if Player:GetAttribute(attribute) >= maxAttributeValue then
-							if currentFarmStage == "Level11" and attribute == "Level" then
-								sendWebhook("> *".. Player.Name .. "* has reached level " .. maxAttributeValue .. ", moving to next stage.", false)
-								task.wait(10)
-								teleportToLobby(currentPlace)
-							elseif attribute == "IcedTea" and escanorFarm["Level11"] == true then
-								sendWebhook("> *".. Player.Name .. "* has reached iced tea " .. maxAttributeValue .. ", moving to next stage.", false)
-								task.wait(10)
-								teleportToLobby(currentPlace)
-							end
+							sendWebhook(`> *{Player.Name}* has reached max {attribute} ({maxAttributeValue}) and is teleporting to lobby.`, true)
+							task.wait(10)
+							teleportToLobby(Place)
 							-- i need to change this if, its doesnt feels right
 						end
 					end
