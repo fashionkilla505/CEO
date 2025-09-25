@@ -385,9 +385,12 @@ if game.GameId == vanguardsGameId then
 				loadNousigi(CFG["namak"])
 			elseif not escanorFarm["Escanor"] then
 				currentFarmStage = escanorFarmStage["Escanor"]
-				-- check max Unit slots
-				Place.CheckIfExpandUnits()
 				
+				-- check max Unit slots
+				if Place == Lobby then
+					Place.CheckIfExpandUnits()
+				end
+
 				loadNousigi(CFG["preEscanor"])
 			elseif not escanorFarm["rerolls"] then
 				currentFarmStage = escanorFarmStage["rerolls"]
