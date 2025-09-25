@@ -385,7 +385,7 @@ if game.GameId == vanguardsGameId then
 				loadNousigi(CFG["namak"])
 			elseif not escanorFarm["Escanor"] then
 				currentFarmStage = escanorFarmStage["Escanor"]
-				
+
 				-- check max Unit slots
 				if Place == Lobby then
 					Place.CheckIfExpandUnits()
@@ -394,6 +394,7 @@ if game.GameId == vanguardsGameId then
 				loadNousigi(CFG["preEscanor"])
 			elseif not escanorFarm["rerolls"] then
 				currentFarmStage = escanorFarmStage["rerolls"]
+
 				if Place == Game then
 					loadNousigi(CFG["postEscanor"])
 
@@ -433,9 +434,17 @@ if game.GameId == vanguardsGameId then
 
 				for key, maxAttributeValue in pairs(attributesMax) do
 					if attribute == key then
-						if Player:GetAttribute(key) >= maxAttributeValue then
-							sendWebhook("> *".. Player.Name .. "* has reached Limit for: " .. key .. " returning to lobby.")
-							teleportToLobby(Place)
+						if Player:GetAttribute(attribute) >= maxAttributeValue then
+							if currentFarmStage == "Level11" and attribute == "Level" then
+								sendWebhook("> *".. Player.Name .. "* has reached level " .. maxAttributeValue .. ", moving to next stage.", false)
+								task.wait(10)
+								teleportToLobby(currentPlace)
+							elseif attribute == "IcedTea" and escanorFarm["Level11"] == true then
+								sendWebhook("> *".. Player.Name .. "* has reached iced tea " .. maxAttributeValue .. ", moving to next stage.", false)
+								task.wait(10)
+								teleportToLobby(currentPlace)
+							end
+							-- i need to change this if, its doesnt feels right
 						end
 					end
 					
