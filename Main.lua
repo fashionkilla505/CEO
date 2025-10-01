@@ -1,20 +1,18 @@
-
 local version = 2.0
 
 -- script config
 
-
 local defaultScriptConfig = {
-    LoadScript = true,
-    Key = "",
-    Node = "emptyNode",
-    webhookUrl = "",
+	LoadScript = true,
+	Key = "",
+	Node = "emptyNode",
+	webhookUrl = "",
 	completedWebhookURL = "",
 	levelMax = 11,
 	icedTeaMax = 300000,
 }
 
-scriptConfig = getgenv().CEOKaitunConfig 
+scriptConfig = getgenv().CEOKaitunConfig
 
 if scriptConfig == nil then
 	scriptConfig = defaultScriptConfig
@@ -26,14 +24,13 @@ else
 	end
 end
 
-
 -- nousigi cfgs
 
 local CFG = {
 	namak = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/levelFarmCFG.txt",
 	preEscanor = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/PreEscanorCFG.txt",
 	postEscanor = "https://raw.githubusercontent.com/fashionkilla505/CEO/refs/heads/main/cfgFolder/PostEscanorCFG.txt",
-}	
+}
 
 --- Services
 print("line 40")
@@ -43,9 +40,7 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 print("line 45")
 
-
 -- tables
-
 
 local Game = {}
 local Lobby = {
@@ -68,33 +63,28 @@ local completedWebhookURL = scriptConfig.completedWebhookURL
 local level = scriptConfig.levelMax
 local icedTea = scriptConfig.icedTeaMax
 
-
-local attributesMax = { 
+local attributesMax = {
 	Level = level,
-	IcedTea = icedTea
+	IcedTea = icedTea,
 }
 
 local escanorFarm = {
 	Level11 = false,
 	Escanor = false,
-	rerolls = false
+	rerolls = false,
 }
-
 
 local brolyFarm = {}
 
 -- key equals it own name tables
 local brolyFarmStage = {}
 local escanorFarmStage = {}
-for key,value in pairs(escanorFarm) do
+for key, value in pairs(escanorFarm) do
 	escanorFarmStage[key] = key
 end
-for key,value in pairs(brolyFarm) do
+for key, value in pairs(brolyFarm) do
 	brolyFarmStage[key] = key
 end
-
-
-
 
 local brolyFarmUsers = {} -- require external table for getting know username for grinding broly
 
@@ -105,7 +95,6 @@ local currentFarmStage
 local function sendWebhook(message, isError, embed)
 	local url = webhookUrl
 
-
 	local success, response = pcall(function()
 		return request({
 			Url = url,
@@ -114,7 +103,7 @@ local function sendWebhook(message, isError, embed)
 				["Content-Type"] = "application/json",
 			},
 			Body = HttpService:JSONEncode({
-				["content"] = "Node: " ..node.. "\n" .. message,
+				["content"] = "Node: " .. node .. "\n" .. message,
 			}),
 		})
 	end)
@@ -122,9 +111,8 @@ local function sendWebhook(message, isError, embed)
 	return success and response
 end
 
-local function completedWebhook(message,isError,embed)
+local function completedWebhook(message, isError, embed)
 	local url = completedWebhookURL
-
 
 	local success, response = pcall(function()
 		return request({
@@ -134,7 +122,7 @@ local function completedWebhook(message,isError,embed)
 				["Content-Type"] = "application/json",
 			},
 			Body = HttpService:JSONEncode({
-				["content"] = "Node: " ..node.. "\n" .. message,
+				["content"] = "Node: " .. node .. "\n" .. message,
 			}),
 		})
 	end)
@@ -153,7 +141,7 @@ local function loadNousigi(cfgURL)
 	elseif scriptKey then
 		getgenv().Key = scriptKey
 		loadstring(game:HttpGet(cfgURL))()
-		loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()	
+		loadstring(game:HttpGet("https://nousigi.com/loader.lua"))()
 	end
 	print("Should nousigi be loaded")
 end
@@ -161,63 +149,64 @@ end
 -- lobby funcs
 
 function Lobby.hasEscanor()
-	local OwnedUnitsHandler = require(game:GetService("StarterPlayer").Modules.Interface.Loader.Gameplay.Units.OwnedUnitsHandler)
-		local units = OwnedUnitsHandler:GetOwnedUnits()
-		for attempt = 1, 20 do
-			if units ~= nil then
-				for _, unit in pairs(units) do
-					if (unit.ID == 270) or (unit.Identifier == 270) then
-						-- Has escanor
-						return true
-					else
-					end
+	local OwnedUnitsHandler =
+		require(game:GetService("StarterPlayer").Modules.Interface.Loader.Gameplay.Units.OwnedUnitsHandler)
+	local units = OwnedUnitsHandler:GetOwnedUnits()
+	for attempt = 1, 20 do
+		if units ~= nil then
+			for _, unit in pairs(units) do
+				if (unit.ID == 270) or (unit.Identifier == 270) then
+					-- Has escanor
+					return true
+				else
 				end
 			end
 		end
+	end
 	return false
 end
 
 -- copiei tambem
 function Lobby.CheckIfExpandUnits()
-		task.spawn(function()
-			while true do
-				local UnitWindowsHandler =
-					require(game:GetService("StarterPlayer").Modules.Interface.Loader.Windows.UnitWindowHandler)
-				local UnitExpansionEvent =
-					game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("UnitExpansionEvent")
-				local maxUnits = 100
-				local timesBought
-				local received = false
-				local connection
+	task.spawn(function()
+		while true do
+			local UnitWindowsHandler =
+				require(game:GetService("StarterPlayer").Modules.Interface.Loader.Windows.UnitWindowHandler)
+			local UnitExpansionEvent =
+				game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("UnitExpansionEvent")
+			local maxUnits = 100
+			local timesBought
+			local received = false
+			local connection
 
-				UnitExpansionEvent:FireServer("Retrieve")
+			UnitExpansionEvent:FireServer("Retrieve")
 
-				connection = UnitExpansionEvent.OnClientEvent:Connect(function(action, data)
-					if action == "SetData" then
-						maxUnits += 25 * data
-						timesBought = data
-						connection:Disconnect()
-						received = true
-					end
-				end)
-
-				repeat
-					task.wait()
-				until received
-
-				local TableUtils = require(game:GetService("ReplicatedStorage").Modules.Utilities.TableUtils)
-				local currentUnits = TableUtils.GetDictionaryLength(UnitWindowsHandler._Cache)
-
-				if maxUnits - currentUnits <= 10 then
-					if Player:GetAttribute("Gold") < (timesBought * 15000 + 25000) then
-						sendWebhook(`> *{Player.Name}* doesn't have enough gold to expand unit capacity!`)
-					else
-						sendWebhook(`> *{Player.Name}* is expanding unit capacity`)
-						UnitExpansionEvent:FireServer("Purchase")
-					end
+			connection = UnitExpansionEvent.OnClientEvent:Connect(function(action, data)
+				if action == "SetData" then
+					maxUnits += 25 * data
+					timesBought = data
+					connection:Disconnect()
+					received = true
 				end
-				task.wait(10)
+			end)
+
+			repeat
+				task.wait()
+			until received
+
+			local TableUtils = require(game:GetService("ReplicatedStorage").Modules.Utilities.TableUtils)
+			local currentUnits = TableUtils.GetDictionaryLength(UnitWindowsHandler._Cache)
+
+			if maxUnits - currentUnits <= 10 then
+				if Player:GetAttribute("Gold") < (timesBought * 15000 + 25000) then
+					sendWebhook(`> *{Player.Name}* doesn't have enough gold to expand unit capacity!`)
+				else
+					sendWebhook(`> *{Player.Name}* is expanding unit capacity`)
+					UnitExpansionEvent:FireServer("Purchase")
+				end
 			end
+			task.wait(10)
+		end
 	end)
 end
 
@@ -228,21 +217,34 @@ function Lobby.checkRRShop(shopName)
 	local remainingRR = StockHandler.GetStockData(shopName)["TraitRerolls"]
 
 	return remainingRR
-end	
+end
 
 function Lobby.BuyRR(shopName)
 	-- copiei mesmo fodase
-	local args = {"Purchase",{"TraitRerolls",200}}
+	local args = { "Purchase", { "TraitRerolls", 200 } }
 
 	if shopName == "SummerShop" then
 		if Player:GetAttribute("IcedTea") >= 300000 then
-			local summerShop = ReplicatedStorage:WaitForChild("Networking"):WaitForChild("Summer"):WaitForChild("ShopEvent")
+			local summerShop =
+				ReplicatedStorage:WaitForChild("Networking"):WaitForChild("Summer"):WaitForChild("ShopEvent")
 			summerShop:FireServer(unpack(args))
 		else
 			print("Not enough iced tea for buying Rerolls")
 		end
 	end
 	return true
+end
+
+function Lobby.claimNewPlayerRewards()
+    local newPlayerRewardsRemote = game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("NewPlayerRewardsEvent")
+    for i = 1, 7 do
+        local args = {
+            "Claim",
+            i
+        }
+        newPlayerRewardsRemote:FireServer(unpack(args))
+        wait(1) -- Pequena pausa para garantir que o servidor processe cada reivindicação
+    end
 end
 
 -- In-game functions (works only on Tomer Defense Game Base)
@@ -271,10 +273,7 @@ local Game = {
 	end,
 }
 
-
 -- other game funcs
-
-
 
 function teleportToLobby(currentPlace)
 	if currentPlace == Game then
@@ -309,16 +308,15 @@ local function validateInfo(typeFarm)
 		end
 	end
 	-- check type farm for broly
-	for i,v in pairs(typeFarm) do
-		print(i," ", v)
-	end	
+	for i, v in pairs(typeFarm) do
+		print(i, " ", v)
+	end
 	return print("ValidateInfo Checked")
 end
 
 local function writeFile()
 	-- template func just for messing around
 end
-
 
 local function finishAccount(typeFarm)
 	local changeAccTxt = `{Player.Name}.txt`
@@ -340,10 +338,9 @@ end
 -- main anime vanguards kaitun code
 print("current game id: ", game.GameId)
 if game.GameId == vanguardsGameId then
-
 	print("Loading Kaitun For Anime Vanguards")
 
-	local Place 
+	local Place
 
 	if game.PlaceId == lobbyPlaceId then
 		Place = Lobby
@@ -360,96 +357,115 @@ if game.GameId == vanguardsGameId then
 	end
 
 	currentPlace = Place
+
+
 	if currentPlace ~= Timechamber then
-	if loadKaitun == true then
-
-		print("Loading Kaitun")
-		if not currentFarm then
-			if not brolyFarmUsers[Player.Name] then
-				currentFarm	= escanorFarm
-				currentFarm.Name = "Escanor"
-			else
-				currentFarm	= brolyFarm
-				currentFarm.Name = "Broly"
+		if loadKaitun == true then
+			if currentPlace == Lobby then
+				currentPlace.claimNewPlayerRewards()
 			end
-		end
-
-		-- escanor farm
-		if currentFarm == escanorFarm then
-
-			validateInfo(escanorFarm)
-
-			-- load cfg according to farm Stage
-			if not escanorFarm["Level11"] then
-				currentFarmStage = escanorFarmStage["Level11"]
-				loadNousigi(CFG["namak"])
-			elseif not escanorFarm["Escanor"] then
-				currentFarmStage = escanorFarmStage["Escanor"]
-
-				-- check max Unit slots
-				if Place == Lobby then
-					Place.CheckIfExpandUnits()
+			print("Loading Kaitun")
+			if not currentFarm then
+				if not brolyFarmUsers[Player.Name] then
+					currentFarm = escanorFarm
+					currentFarm.Name = "Escanor"
+				else
+					currentFarm = brolyFarm
+					currentFarm.Name = "Broly"
 				end
+			end
 
-				loadNousigi(CFG["preEscanor"])
-			elseif not escanorFarm["rerolls"] then
-				currentFarmStage = escanorFarmStage["rerolls"]
+			-- escanor farm
+			if currentFarm == escanorFarm then
+				validateInfo(escanorFarm)
 
-				if Place == Game then
-					loadNousigi(CFG["postEscanor"])
+				-- load cfg according to farm Stage
+				if not escanorFarm["Level11"] then
+					currentFarmStage = escanorFarmStage["Level11"]
+					loadNousigi(CFG["namak"])
+				elseif not escanorFarm["Escanor"] then
+					currentFarmStage = escanorFarmStage["Escanor"]
 
-				elseif Place == Lobby then
-
-					Place.BuyRR("SummerShop")
-					task.wait(10)
-
-					if Place.checkRRShop("SummerShop") == 0 then
-						escanorFarm["rerolls"] = true
-						finishAccount(currentFarm)
+					-- check max Unit slots
+					if Place == Lobby then
+						Place.CheckIfExpandUnits()
 					end
 
-					loadNousigi(CFG["postEscanor"])
-				end
-			else
-				print("Account Done")
-				finishAccount(currentFarm)
-			end
-			if currentFarmStage ~= "DONE" then
-				if Place == Game then
-					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarm.Name.. " at stage: " .. currentFarmStage .. " IN GAME", false)
-				-- check for level/icedtea quantity max
-				elseif Place == Lobby then
-					sendWebhook("> *" .. Player.Name .. "* is farming: " .. currentFarm.Name.. " at stage: " .. currentFarmStage .. " IN LOBBY", false)
-				end
-			else
-				sendWebhook("last webhook message this channel. " .. Player.Name .. " has done all kaitun steps")
-			end
+					loadNousigi(CFG["preEscanor"])
+				elseif not escanorFarm["rerolls"] then
+					currentFarmStage = escanorFarmStage["rerolls"]
 
-			if Place == Game then
-				local attributeListener = Player.AttributeChanged:Connect(function(attribute)
+					if Place == Game then
+						loadNousigi(CFG["postEscanor"])
+					elseif Place == Lobby then
+						Place.BuyRR("SummerShop")
+						task.wait(10)
 
-				if currentFarmStage == "rerolls" then
-					attributesMax.IcedTea = 300000
-				end
-
-				for key, maxAttributeValue in pairs(attributesMax) do
-					if attribute == key then
-						if Player:GetAttribute(attribute) >= maxAttributeValue then
-							sendWebhook(`> *{Player.Name}* has reached max {attribute} ({maxAttributeValue}) and is teleporting to lobby.`, true)
-							task.wait(10)
-							teleportToLobby(Place)
-							-- i need to change this if, its doesnt feels right
+						if Place.checkRRShop("SummerShop") == 0 then
+							escanorFarm["rerolls"] = true
+							finishAccount(currentFarm)
 						end
-					end
-					
-				end
-			end)
-		end
-		--- broly farm
-	end
-	end
-end
-end
 
+						loadNousigi(CFG["postEscanor"])
+					end
+				else
+					print("Account Done")
+					finishAccount(currentFarm)
+				end
+				if currentFarmStage ~= "DONE" then
+					if Place == Game then
+						sendWebhook(
+							"> *"
+								.. Player.Name
+								.. "* is farming: "
+								.. currentFarm.Name
+								.. " at stage: "
+								.. currentFarmStage
+								.. " IN GAME",
+							false
+						)
+					-- check for level/icedtea quantity max
+					elseif Place == Lobby then
+						sendWebhook(
+							"> *"
+								.. Player.Name
+								.. "* is farming: "
+								.. currentFarm.Name
+								.. " at stage: "
+								.. currentFarmStage
+								.. " IN LOBBY",
+							false
+						)
+					end
+				else
+					sendWebhook("last webhook message this channel. " .. Player.Name .. " has done all kaitun steps")
+				end
+
+				if Place == Game then
+					local attributeListener = Player.AttributeChanged:Connect(function(attribute)
+						if currentFarmStage == "rerolls" then
+							attributesMax.IcedTea = 300000
+						end
+
+						for key, maxAttributeValue in pairs(attributesMax) do
+							if attribute == key then
+								if Player:GetAttribute(attribute) >= maxAttributeValue then
+									sendWebhook(
+										`> *{Player.Name}* has reached max {attribute} ({maxAttributeValue}) and is teleporting to lobby.`,
+										true
+									)
+									task.wait(10)
+									teleportToLobby(Place)
+									-- i need to change this if, its doesnt feels right
+								end
+							end
+						end
+					end)
+				end
+				--- broly farm
+			end
+		end
+	end
+end
 
 print("its working!")
